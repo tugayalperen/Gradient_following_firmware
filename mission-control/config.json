@@ -1,0 +1,18 @@
+{
+    "sigma_base": 25,
+    "sigma_var": 28,
+    "k1": 3,
+    "k2": 30,
+    "alpha": 40,
+    "beta": 10,
+    "kappa": 0,
+    "light_max": 162,
+    "light_min": 13,
+    "flight_height": 5,
+    "umax": 13,
+    "wmax": 4,
+    "u_add": 5,
+    "update_params": 1,
+    "seq_initial": 1,
+    "seq_type": 6
+}
