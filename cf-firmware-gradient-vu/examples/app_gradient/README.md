@@ -21,7 +21,7 @@ Same requirements as Crazyflie firmware
 ## Installation
 - clone the repository
 ```bash
-git clone https://github.com/RetamalVictor/crazyflie-firmware-VU.git
+git clone https://github.com/RetamalVictor/cf-firmware-gradient-vu.git
 ```
 
 ## Build
