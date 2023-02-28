@@ -12,9 +12,9 @@ More information about the app layer can be found [here](https://www.bitcraze.io
 Once the new app is flashed in the crazyflies. Please refer to the main [mision control script] **Needs to be updated** to initiate the experiments.
 
 ## Building and Flashing
-See the [building and flashing instructions](https://github.com/bitcraze/crazyflie-firmware/blob/master/docs/building-and-flashing/build.md) in the github docs folder.
+See the [building and flashing instructions](https://github.com/bitcraze/crazyflie-firmware/blob/master/docs/building-and-flashing/build.md) by Bitcraze.
 
 
 ## Official Documentation
 
-Check out the [Bitcraze crazyflie-firmware documentation](https://www.bitcraze.io/documentation/repository/crazyflie-firmware/master/) on their website.
+Check out the [Bitcraze crazyflie-firmware documentation](https://www.bitcraze.io/documentation/repository/crazyflie-firmware/master/) on Bitcraze website.
