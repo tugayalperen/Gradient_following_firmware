@@ -1,5 +1,35 @@
-# Hello world App for Crazyflie 2.X
+# VU Light Following Swarm for Crazyflie
+Application with Crayflie app-Layer.
 
-This folder contains the app layer application for the Crazyflie to print a hello world debug message, which can be read in the console tab of the [cfclient](https://github.com/bitcraze/crazyflie-clients-python). 
+------
+#### This directory is directly related to the following paper:
+### From Shadows to Light: A Swarm Robotics Approach with Onboard Control for Source Seeking in Constrained Environments*
 
-See App layer API guide and build instructions [here](https://www.bitcraze.io/documentation/repository/crazyflie-firmware/master/userguides/app_layer/)
+
+### Citation:
+```
+Coming soon
+```
+---
+REQUIREMENTS
+------------
+
+Mission control software **Needs update**
+
+Same requirements as Crazyflie firmware
+
+## Installation
+- clone the repository
+```bash
+git clone https://github.com/RetamalVictor/crazyflie-firmware-VU.git
+```
+
+## Build
+
+Make sure that you are in the app_swarm (not the main folder of the crazyflie firmware). Then type the following to build and flash it while the crazyflie is put into bootloader mode:
+
+```
+make clean
+make 
+make cload
+```
