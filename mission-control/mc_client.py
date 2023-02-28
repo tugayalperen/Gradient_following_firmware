@@ -15,42 +15,27 @@ from matplotlib import patches
 from PyP100 import PyP100
 import os
 import json
+import argparse
 
 ## A, B --> 35 secs
 ## C, D --> 65 secs
 ## E --> 40 secs
 
-experiment_name = "tempp"
-# experiment_name = "tempp"
+experiment_name = "Experiment_1"
 if not os.path.isdir(experiment_name):
     os.mkdir(experiment_name)
     print("The directory is created.")
 else:
     print("The experiment directory already exists!!q!")
-    # exit()
+    exit()
 
-p1 = PyP100.P100("10.15.2.201", "tugay.karaguzel@gmail.com", "Crazyflie2022")
-p2 = PyP100.P100("10.15.2.202", "tugay.karaguzel@gmail.com", "Crazyflie2022")
-p3 = PyP100.P100("10.15.2.206", "tugay.karaguzel@gmail.com", "Crazyflie2022")
-p4 = PyP100.P100("10.15.2.207", "tugay.karaguzel@gmail.com", "Crazyflie2022")
-p5 = PyP100.P100("10.15.2.208", "tugay.karaguzel@gmail.com", "Crazyflie2022")
-p6 = PyP100.P100("10.15.2.209", "tugay.karaguzel@gmail.com", "Crazyflie2022")
+# This initializes the connection to the bulb, create as many as needed for your setup
+p1 = PyP100.P100("00.00.0.000", "your.email@gmail.com", "your_password")
 
-p_array = [p1, p2, p3, p4, p5, p6]
-
+p_array = [p1]
 p1.handshake()
-p2.handshake()
-p3.handshake()
-p4.handshake()
-p5.handshake()
-p6.handshake()
-
 p1.login()
-p2.login()
-p3.login()
-p4.login()
-p5.login()
-p6.login()
+
 
 # Only output errors from the logging framework
 logging.basicConfig(level=logging.ERROR)
@@ -105,7 +90,6 @@ def logg_swarm(scf):
             agg_data = entry[1]["synthLog.agg_data"]
             agent_id = entry[1]["synthLog.agent_id"]
             x, y, h, l = decode_aggdata(agg_data)
-            # print(int((agent_id-1) + steps[agent_id-1]*max_num_cf))
             log_all[int((agent_id-1) + steps[agent_id-1]*max_num_cf), :] = x, y, h, l
             xs[int(agent_id-1)] = x
             ys[int(agent_id-1)] = y
@@ -178,10 +162,6 @@ def log_swarm(swarm):
 
 
 if __name__ == "__main__":
-    # uris = set()
-    # base = 'radio://0/100/2M/E7E7E7E70'
-    # for uri in range(1, num_cf+1, 1):
-    #     uris.add(base + str(uri))
 
     uris = {
         'radio://0/100/2M/E7E7E7E701',
@@ -189,7 +169,6 @@ if __name__ == "__main__":
         'radio://0/100/2M/E7E7E7E703',
         'radio://0/100/2M/E7E7E7E704',
         'radio://0/100/2M/E7E7E7E705',
-        # Add more URIs if you want more copters in the swarm
     }
 
     size_x = 8.0
@@ -222,6 +201,7 @@ if __name__ == "__main__":
     font = pygame.font.Font(None, 45)
     done = False
     start_seq = False
+    obstacle_exp = False
     seq_duration = 100.0
     custom_seq_1 = np.array([1, 6, 5, 2, 3, 4])
     # custom_seq_2 = np.array([1, 5, 3, 4, 2, 6])
@@ -265,8 +245,9 @@ if __name__ == "__main__":
                         #                                linewidth=5, edgecolor='orange', facecolor='orange', alpha=0.5)
                         light_cent = plt.Circle((light_centers_x[c], light_centers_y[c]), 2.33/2, color='orange', alpha=0.5)
                         ax.add_patch(light_cent)
-                # obstacle = plt.Circle((obs_pos[0], obs_pos[1]), 0.4, color='red', alpha=0.3)
-                # ax.add_patch(obstacle)
+                if obstacle_exp:
+                    obstacle = plt.Circle((obs_pos[0], obs_pos[1]), 0.4, color='red', alpha=0.3)
+                    ax.add_patch(obstacle)
                 plt.scatter(xs, ys, color=mapper.to_rgba(ls))
                 plt.scatter(np.mean(xs), np.mean(ys), color='red')
                 print("X-Com is: ", np.mean(xs), " ||| Y-Com is: ", np.mean(ys))
