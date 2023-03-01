@@ -523,7 +523,7 @@ void appMain()
         ry += krep * ( (1./(fabs(self_pos[0]))) - (1./L0) ) * ( sin(0.0)/pow((fabs(self_pos[0])),3.) );
       }
 
-      // Getting sensor measurements from Multiranger deck and defining offsets 
+      // Equation (9) Getting sensor measurements from Multiranger deck and defining offsets 
       front_range = logGetFloat(ranger_front) - 150;
       back_range  = logGetFloat(ranger_back) - 150;
       right_range = logGetFloat(ranger_right) - 150;
@@ -546,7 +546,10 @@ void appMain()
 
         if (front_bias_angle > 0)
         {
-          // Equation (7) We add two vector forces here
+          // Equation (5) We add two vector forces here. o = sum(o_d)
+          // Both components [x, y] for vector o are computed individually.
+          // Both vectors are calculated using Equation (6), (7) and (8)
+          
           // This is one vector force. Pointing backwards (3.14 rads or 180 deg)
           ox += pow(2.5/((double)front_range/1000),2.) * cos(self_pos[2] + 3.14 + random_addition) * 0.5;
           oy += pow(2.5/((double)front_range/1000),2.) * sin(self_pos[2] + 3.14 + random_addition) * 0.5;
@@ -595,14 +598,14 @@ void appMain()
         hy = 0.0;        
       }         
 
-      // Equation (8) Total force vector
+      // Equation (10) Total force vector
       fx_raw = alpha * px + beta * hx + gama * rx + kappa * gx + 2*ox;
       fy_raw = alpha * py + beta * hy + gama * ry + kappa * gy + 2*oy;
 
       fx = sqrt(fx_raw*fx_raw + fy_raw*fy_raw) * cos(atan2(fy_raw, fx_raw) - self_pos[2]);
       fy = sqrt(fx_raw*fx_raw + fy_raw*fy_raw) * sin(atan2(fy_raw, fx_raw) - self_pos[2]);
 
-      // Equation (9) Linear and Angular speeds
+      // Equation (11) Linear and Angular speeds
       u = K1 * fx + u_add;
       w = K2 * fy;
 
