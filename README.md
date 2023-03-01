@@ -1,7 +1,7 @@
 
 # **From Shadows to Light: A Swarm Robotics Approach with Onboard Control for Source Seeking in Constrained Environments**
 
-[Animations of the experiments can be found in this playlist](https://www.youtube.com/playlist?list=PLQXaE6NbHSe2d1Y2zXLiO3y00d4w9OrXR)
+[Replay animations of the experiments can be found in this playlist](https://www.youtube.com/playlist?list=PLQXaE6NbHSe2d1Y2zXLiO3y00d4w9OrXR)
 
 [Real flight videos of experiments can be found in this playlist](https://youtube.com/playlist?list=PLQXaE6NbHSe39z1X2zpjZD6f6mB9f40u9)
 
