@@ -9,6 +9,8 @@
 
 The firmware files needed for the experiments are located in ```cf-firmware-gradient-vu/examples/app_gradient```
 
+Quick access [here](https://github.com/tugayalperen/IROS23gradfollower/tree/main/cf-firmware-gradient-vu/examples/app_gradient)
+
 Please follow the official bitcraze documentation to build and flash new firmware in the crazyflie with the app layer. 
 More information about the app layer can be found [here](https://www.bitcraze.io/documentation/repository/crazyflie-firmware/master/userguides/app_layer/).
 
