@@ -36,4 +36,6 @@ When running ```mc_client.py``` two windows will appear. One window will contain
 
 To launch the experiment ```Press U``` To update the parameters in your Crazyflie swarm. ```Press T``` to takeoff the swarm. ```Press O``` to initiate the light sequence.
 
+The experiment will automatically finish and land the swarm after the stablished time, ```Press Q``` to quit and save the data. If the experiment needs to be aborted ```Press L``` to land the swarm and ```Press Q``` to quit and save the data. 
+
 Note that the smart sockets uses require a personal key. You will need to configure your own smart lights. 
