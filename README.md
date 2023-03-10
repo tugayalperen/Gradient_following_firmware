@@ -14,7 +14,7 @@ Quick access [here](https://github.com/tugayalperen/IROS23gradfollower/tree/main
 Please follow the official bitcraze documentation to build and flash new firmware in the crazyflie with the app layer. 
 More information about the app layer can be found [here](https://www.bitcraze.io/documentation/repository/crazyflie-firmware/master/userguides/app_layer/).
 
-Once the new app is flashed in the crazyflies. Please refer to the main [mision control script] **Needs to be updated** to initiate the experiments.
+Once the new app is flashed in the crazyflies. Please refer to the main [mision control script]
 
 ## Building and Flashing
 See the [building and flashing instructions](https://github.com/bitcraze/crazyflie-firmware/blob/master/docs/building-and-flashing/build.md) by Bitcraze.
