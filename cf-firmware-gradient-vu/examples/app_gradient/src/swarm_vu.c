@@ -46,8 +46,6 @@ uint8_t sb_tmp;
 uint8_t sv_tmp;
 uint8_t K1_tmp;
 uint8_t K2_tmp;;
-uint8_t lmx_tmp;
-uint8_t lmn_tmp;
 uint8_t fh_tmp;
 uint8_t wmax_tmp;
 uint8_t umax_tmp;
@@ -60,11 +58,15 @@ double rx = 0.0;
 double ry = 0.0;
 
 // Neighbourhood
-double neg_xs[] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-double neg_ys[] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-double neg_hs[] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+// double neg_xs[] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+// double neg_ys[] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+// double neg_hs[] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+double neg_xs[10];
+double neg_ys[10];
+double neg_hs[10];
+
 double self_pos[] = {0.0, 0.0, 0.0};
-bool neg_alive[] = {false, false, false, false, false, false, false};
+bool neg_alive[] = {false, false, false, false, false, false, false, false, false };
 
 // General variables
 double distance = 0.0;
@@ -79,14 +81,14 @@ double sum_cosh = 0.0;
 double sum_sinh = 0.0;
 
 // Multi Ranger deck
-float front_range = 5000;
-float back_range = 5000;
-float left_range = 5000;
-float right_range = 5000;
-double random_addition = 0.0;
-double ox = 0.0;
-double oy = 0.0;
-double front_bias_angle = 0.0;
+// float front_range = 5000;
+// float back_range = 5000;
+// float left_range = 5000;
+// float right_range = 5000;
+// double random_addition = 0.0;
+// double ox = 0.0;
+// double oy = 0.0;
+// double front_bias_angle = 0.0;
 
 // Proximal force
 double px = 0.0;
@@ -114,8 +116,8 @@ double vx = 0.0;
 double vy = 0.0;
 
 // Light sensor
-float lmx = 450;
-float lmn = 50;
+// float lmx = 450;
+// float lmn = 50;
 
 // Total flight time
 double total_flight = 0.0;
@@ -138,8 +140,8 @@ static paramVarId_t paramIdSb;
 static paramVarId_t paramIdSv;
 static paramVarId_t paramIdK1;
 static paramVarId_t paramIdK2;
-static paramVarId_t paramIdLmx;
-static paramVarId_t paramIdLmn;
+// static paramVarId_t paramIdLmx;
+// static paramVarId_t paramIdLmn;
 static paramVarId_t paramIdFh;
 static paramVarId_t paramIdWmax;
 static paramVarId_t paramIdUmax;
@@ -256,7 +258,7 @@ void appMain()
     static uint8_t _formation;
     static float _goal_x;
     static float _goal_y;
-    _fmode = 2;
+    _fmode = 1; // hardcoded to flocking
     _goal_x = 3.0;
     _goal_y = 2.25;
     iftakeoff = 0;
@@ -295,8 +297,8 @@ void appMain()
     //  -> Light, heading and agg data
     LOG_GROUP_START(synthLog)
     LOG_ADD_CORE(LOG_FLOAT, heading, &heading_log)
-    LOG_ADD_CORE(LOG_FLOAT, light_intensity, &light_log)
-    LOG_ADD_CORE(LOG_INT32, agg_data, &agg_data_log)
+    // LOG_ADD_CORE(LOG_FLOAT, light_intensity, &light_log)
+    // LOG_ADD_CORE(LOG_INT32, agg_data, &agg_data_log)
     LOG_ADD_CORE(LOG_UINT8, agent_id, &smy_id)
     LOG_GROUP_STOP(synthLog)
 
@@ -322,8 +324,8 @@ void appMain()
     PARAM_ADD_CORE(PARAM_UINT8, kappa_param, &kappa_tmp)
     PARAM_ADD_CORE(PARAM_UINT8, k1_param, &K1_tmp)
     PARAM_ADD_CORE(PARAM_UINT8, k2_param, &K2_tmp)       
-    PARAM_ADD_CORE(PARAM_UINT8, lmn_param, &lmn_tmp)
-    PARAM_ADD_CORE(PARAM_UINT8, lmx_param, &lmx_tmp)
+    // PARAM_ADD_CORE(PARAM_UINT8, lmn_param, &lmn_tmp)
+    // PARAM_ADD_CORE(PARAM_UINT8, lmx_param, &lmx_tmp)
     PARAM_ADD_CORE(PARAM_UINT8, wmax_param, &wmax_tmp)
     PARAM_ADD_CORE(PARAM_UINT8, umax_param, &umax_tmp)
     PARAM_ADD_CORE(PARAM_UINT8, u_add_param, &u_add_tmp)
@@ -349,8 +351,6 @@ void appMain()
     paramIdKappa = paramGetVarId("flockParams", "kappa_param");
     paramIdK1 = paramGetVarId("flockParams", "k1_param");
     paramIdK2 = paramGetVarId("flockParams", "k2_param"); 
-    paramIdLmn = paramGetVarId("flockParams", "lmn_param");
-    paramIdLmx = paramGetVarId("flockParams", "lmx_param");
     paramIdWmax = paramGetVarId("flockParams", "wmax_param");
     paramIdUmax = paramGetVarId("flockParams", "umax_param");
     paramIdUadd = paramGetVarId("flockParams", "u_add_param");
@@ -365,8 +365,8 @@ void appMain()
   while(1) {
     
     // Reading the lights from the onboard light sensor
-    a_read = analogRead(DECK_GPIO_TX2);
-    light_log = a_read;
+    // a_read = analogRead(DECK_GPIO_TX2);
+    // light_log = a_read;
 
     // Getting flag for On-the-fly parameter update
     ifupdateParams = paramGetInt(paramIdUpdateParams);
@@ -380,8 +380,6 @@ void appMain()
       sv = ((double)paramGetInt(paramIdSv)) / 50; 
       kappa = ((double)paramGetInt(paramIdKappa)) / 50;
       fh = ((double)paramGetInt(paramIdFh)) / 10;
-      lmn = ((float)paramGetInt(paramIdLmn)) * 4;
-      lmx = ((float)paramGetInt(paramIdLmx)) * 4;
       umax = ((double)paramGetInt(paramIdUmax)) / 100;
       wmax = ((double)paramGetInt(paramIdWmax)) / 10 * 3.14;
       u_add = ((double)paramGetInt(paramIdUadd)) / 100;
@@ -441,9 +439,9 @@ void appMain()
       self_pos[1] = (double)self_coords.y;
       self_pos[2] = (double)self_coords.h;
 
-      // light cap
-      if (light_log < lmn) {light_log=lmn;}
-      if (light_log >lmx) {light_log=lmx;}      
+      // // light cap
+      // if (light_log < lmn) {light_log=lmn;}
+      // if (light_log >lmx) {light_log=lmx;}      
       
       /* 
       Fmodes are use to define specific missions. 
@@ -455,13 +453,13 @@ void appMain()
         u_add = 0.05;
       }
       
-      else if (_fmode == 2) {
-        // Gradient following mode
-        // Equation (2)
-        su = sb + pow((light_log-lmn)/(lmx - lmn), 0.1)*sv;
-        u_add = 0.05;  
-        kappa = 0.0;  
-      }
+      // else if (_fmode == 2) {
+      //   // Gradient following mode
+      //   // Equation (2)
+      //   su = sb + pow((light_log-lmn)/(lmx - lmn), 0.1)*sv;
+      //   u_add = 0.05;  
+      //   kappa = 0.0;  
+      // }
 
       else if (_fmode == 3) {
         // Go to goal mode
@@ -477,7 +475,7 @@ void appMain()
       sum_cosh = cos(self_pos[2]);
       sum_sinh = sin(self_pos[2]);
 
-      for (int i = 0; i < 7; i++)
+      for (int i = 0; i < 10; i++)
       {
         if ( neg_alive[i] && (neg_xs[i] > 0.0) && ((i+1) != my_id) )
         {
@@ -524,83 +522,83 @@ void appMain()
       }
 
       // Equation (9) Getting sensor measurements from Multiranger deck and defining offsets 
-      front_range = logGetFloat(ranger_front) - 150;
-      back_range  = logGetFloat(ranger_back) - 150;
-      right_range = logGetFloat(ranger_right) - 150;
-      left_range  = logGetFloat(ranger_left) - 150;
-      if (front_range<0) {front_range = 50;}    
-      if (back_range<0) {back_range = 50;}  
-      if (right_range<0) {right_range = 50;}
-      if (left_range<0) {left_range = 50;}    
+      // front_range = logGetFloat(ranger_front) - 150;
+      // back_range  = logGetFloat(ranger_back) - 150;
+      // right_range = logGetFloat(ranger_right) - 150;
+      // left_range  = logGetFloat(ranger_left) - 150;
+      // if (front_range<0) {front_range = 50;}    
+      // if (back_range<0) {back_range = 50;}  
+      // if (right_range<0) {right_range = 50;}
+      // if (left_range<0) {left_range = 50;}    
 
       // Equations (5), (6), (7) Obstacle avoidance vector
       //FRONT
-      if (front_range < 300) 
-      {
-        random_addition = -0.5 + ((double)rand()/((double)RAND_MAX));  
-        hx = 0.0;
-        hy = 0.0;
+      // if (front_range < 300) 
+      // {
+      //   random_addition = -0.5 + ((double)rand()/((double)RAND_MAX));  
+      //   hx = 0.0;
+      //   hy = 0.0;
 
-        // Selecting the bias to break symmetry in favour of the swarm position
-        front_bias_angle = atan2(py, px) - self_pos[2];
+      //   // Selecting the bias to break symmetry in favour of the swarm position
+      //   front_bias_angle = atan2(py, px) - self_pos[2];
 
-        if (front_bias_angle > 0)
-        {
-          // Equation (5) We add two vector forces here. o = sum(o_d)
-          // Both components [x, y] for vector o are computed individually.
-          // Both vectors are calculated using Equation (6), (7) and (8)
+      //   if (front_bias_angle > 0)
+      //   {
+      //     // Equation (5) We add two vector forces here. o = sum(o_d)
+      //     // Both components [x, y] for vector o are computed individually.
+      //     // Both vectors are calculated using Equation (6), (7) and (8)
           
-          // This is one vector force. Pointing backwards (3.14 rads or 180 deg)
-          ox += pow(2.5/((double)front_range/1000),2.) * cos(self_pos[2] + 3.14 + random_addition) * 0.5;
-          oy += pow(2.5/((double)front_range/1000),2.) * sin(self_pos[2] + 3.14 + random_addition) * 0.5;
+      //     // This is one vector force. Pointing backwards (3.14 rads or 180 deg)
+      //     ox += pow(2.5/((double)front_range/1000),2.) * cos(self_pos[2] + 3.14 + random_addition) * 0.5;
+      //     oy += pow(2.5/((double)front_range/1000),2.) * sin(self_pos[2] + 3.14 + random_addition) * 0.5;
 
-          // This is the second vector force. Pointing right (1.57 rads or 90 deg)
-          ox += pow(2.5/((double)front_range/1000),2.) * cos(self_pos[2] + 1.57 + random_addition);
-          oy += pow(2.5/((double)front_range/1000),2.) * sin(self_pos[2] + 1.57 + random_addition);
-        }
-        else
-        {
-          ox += pow(2.5/((double)front_range/1000),2.) * cos(self_pos[2] + 3.14 + random_addition) * 0.5;
-          oy += pow(2.5/((double)front_range/1000),2.) * sin(self_pos[2] + 3.14 + random_addition) * 0.5;          
-          ox += pow(2.5/((double)front_range/1000),2.) * cos(self_pos[2] + -1.57 + random_addition);
-          oy += pow(2.5/((double)front_range/1000),2.) * sin(self_pos[2] + -1.57 + random_addition);  
-        }      
-      }
+      //     // This is the second vector force. Pointing right (1.57 rads or 90 deg)
+      //     ox += pow(2.5/((double)front_range/1000),2.) * cos(self_pos[2] + 1.57 + random_addition);
+      //     oy += pow(2.5/((double)front_range/1000),2.) * sin(self_pos[2] + 1.57 + random_addition);
+      //   }
+      //   else
+      //   {
+      //     ox += pow(2.5/((double)front_range/1000),2.) * cos(self_pos[2] + 3.14 + random_addition) * 0.5;
+      //     oy += pow(2.5/((double)front_range/1000),2.) * sin(self_pos[2] + 3.14 + random_addition) * 0.5;          
+      //     ox += pow(2.5/((double)front_range/1000),2.) * cos(self_pos[2] + -1.57 + random_addition);
+      //     oy += pow(2.5/((double)front_range/1000),2.) * sin(self_pos[2] + -1.57 + random_addition);  
+      //   }      
+      // }
 
-      // BACK
-      if (back_range < 100) 
-      {
-        random_addition = -0.5 + ((double)rand()/((double)RAND_MAX));  
-        // Equation (7) In this case only one vector is added
-        ox += pow(2.5/((double)back_range/1000),2.) * cos(self_pos[2] + 0.0 + random_addition);
-        oy += pow(2.5/((double)back_range/1000),2.) * sin(self_pos[2] + 0.0 + random_addition);
-        hx = 0.0;
-        hy = 0.0;        
-      }
+      // // BACK
+      // if (back_range < 100) 
+      // {
+      //   random_addition = -0.5 + ((double)rand()/((double)RAND_MAX));  
+      //   // Equation (7) In this case only one vector is added
+      //   ox += pow(2.5/((double)back_range/1000),2.) * cos(self_pos[2] + 0.0 + random_addition);
+      //   oy += pow(2.5/((double)back_range/1000),2.) * sin(self_pos[2] + 0.0 + random_addition);
+      //   hx = 0.0;
+      //   hy = 0.0;        
+      // }
 
-      // LEFT
-      if (left_range < 300) 
-      {
-        random_addition = -0.5 + ((double)rand()/((double)RAND_MAX));  
-        ox += pow(2.5/((double)left_range/1000),2.) * cos(self_pos[2] + -1.57 + random_addition);
-        oy += pow(2.5/((double)left_range/1000),2.) * sin(self_pos[2] + -1.57 + random_addition);
-        hx = 0.0;
-        hy = 0.0;        
-      }
+      // // LEFT
+      // if (left_range < 300) 
+      // {
+      //   random_addition = -0.5 + ((double)rand()/((double)RAND_MAX));  
+      //   ox += pow(2.5/((double)left_range/1000),2.) * cos(self_pos[2] + -1.57 + random_addition);
+      //   oy += pow(2.5/((double)left_range/1000),2.) * sin(self_pos[2] + -1.57 + random_addition);
+      //   hx = 0.0;
+      //   hy = 0.0;        
+      // }
 
-      // RIGHT
-      if (right_range < 300) 
-      {
-        random_addition = -0.5 + ((double)rand()/((double)RAND_MAX));  
-        ox += pow(2.5/((double)right_range/1000),2.) * cos(self_pos[2] + 1.57 + random_addition);
-        oy += pow(2.5/((double)right_range/1000),2.) * sin(self_pos[2] + 1.57 + random_addition);
-        hx = 0.0;
-        hy = 0.0;        
-      }         
+      // // RIGHT
+      // if (right_range < 300) 
+      // {
+      //   random_addition = -0.5 + ((double)rand()/((double)RAND_MAX));  
+      //   ox += pow(2.5/((double)right_range/1000),2.) * cos(self_pos[2] + 1.57 + random_addition);
+      //   oy += pow(2.5/((double)right_range/1000),2.) * sin(self_pos[2] + 1.57 + random_addition);
+      //   hx = 0.0;
+      //   hy = 0.0;        
+      // }         
 
       // Equation (10) Total force vector
-      fx_raw = alpha * px + beta * hx + gama * rx + kappa * gx + 2*ox;
-      fy_raw = alpha * py + beta * hy + gama * ry + kappa * gy + 2*oy;
+      fx_raw = alpha * px + beta * hx + gama * rx + kappa * gx; // + 2*ox;
+      fy_raw = alpha * py + beta * hy + gama * ry + kappa * gy; // + 2*oy;
 
       fx = sqrt(fx_raw*fx_raw + fy_raw*fy_raw) * cos(atan2(fy_raw, fx_raw) - self_pos[2]);
       fy = sqrt(fx_raw*fx_raw + fy_raw*fy_raw) * sin(atan2(fy_raw, fx_raw) - self_pos[2]);
@@ -635,7 +633,7 @@ void appMain()
       _formation = paramGetInt(paramIdformation);
 
       // Data aggregation for next logging 
-      agg_data_log = aggregate_data(self_pos[0], self_pos[1], self_pos[2], (double)light_log);
+      agg_data_log = aggregate_data(self_pos[0], self_pos[1], self_pos[2], 45.0);
 
       vTaskDelay(M2T(50));
 
