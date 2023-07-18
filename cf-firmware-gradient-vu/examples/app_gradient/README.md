@@ -3,7 +3,7 @@ Application with Crayflie app-Layer.
 
 ------
 #### This directory is directly related to the following paper:
-### From Shadows to Light: A Swarm Robotics Approach with Onboard Control for Dynamic Source Seeking in Constrained Environments*
+### 	From Shadows to Light: A Swarm Robotics Approach with Onboard Control for Seeking Dynamic Sources in Constrained Environments*
 
 
 ### Citation:
